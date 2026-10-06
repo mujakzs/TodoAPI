@@ -1,5 +1,15 @@
 <Solution>
-  <Folder Name="/src/">
+  <Folder Name="/src/" />
+  <Folder Name="/src/Application/">
+    <Project Path="Todo.Application/Todo.Application.csproj" Id="bd9b32ee-a0a5-463c-b6b2-35e0329464be" />
+  </Folder>
+  <Folder Name="/src/Domain/">
+    <Project Path="Todo.Domain/Todo.Domain.csproj" Id="cb790142-4031-439d-9b2a-0392a8529fcc" />
+  </Folder>
+  <Folder Name="/src/Infrastructure/">
+    <Project Path="Todo.Infrastructure/Todo.Infrastructure.csproj" Id="743505ca-f7a1-426c-9fe1-72ed0b328023" />
+  </Folder>
+  <Folder Name="/src/Presentation/">
     <Project Path="Todo.API/Todo.API.csproj" />
   </Folder>
 </Solution>

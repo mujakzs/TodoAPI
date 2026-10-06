@@ -11,5 +11,6 @@ public class TodoList : BaseAuditEntity
 
     public Guid UserId { get; set; }
     public User User { get; set; }
-    public ICollection<TodoItem> Items { get; set; } = new List<TodoItem>();
+
+    public ICollection<TodoItem> TodoItems { get; set; }
 }
