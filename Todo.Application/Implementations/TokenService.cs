@@ -17,11 +17,15 @@ namespace Todo.Application.Implementations
     {
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public TokenService(IUserRepository userRepository, IConfiguration configuration)
+        public TokenService(IUserRepository userRepository, 
+            IConfiguration configuration,
+            IPasswordHasher passwordHasher)
         {
             _userRepository = userRepository;
             _configuration = configuration;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<TokenResponseDto> GetTokenAsync(TokenRequestDto requestDto)
@@ -34,10 +38,8 @@ namespace Todo.Application.Implementations
                 throw new InvalidEmailException(ErrorConstant.InvalidEmail);
             }
 
-            bool isPasswordValid
-                = BCrypt.Net.BCrypt.Verify(requestDto.password, userDomain.PasswordHash); // Verify the password using BCrypt : (requestDto.password, userDomain.PasswordHash) ipasa ning parameter para i check sa library if match ba ang password sa hash stored sa database.
-
-            if (!isPasswordValid)
+             // Verify the password using BCrypt : (requestDto.password, userDomain.PasswordHash) ipasa ning parameter para i check sa library if match ba ang password sa hash stored sa database.
+            if (!_passwordHasher.VerifyPassword(requestDto.password, userDomain.PasswordHash))
             {
                 throw new InvalidEmailException(ErrorConstant.InvalidPassword);
             }

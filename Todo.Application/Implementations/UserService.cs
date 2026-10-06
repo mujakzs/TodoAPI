@@ -7,7 +7,8 @@ using Todo.Domain.RepositoryInterface;
 namespace Todo.Application.Implementations
 {
     public class UserService(IUserRepository userRepository,
-        IMapper mapper) : IUserService
+        IMapper mapper,
+        IPasswordHasher _passwordHasher) : IUserService
     {
         public async Task<bool> CreateUserAsync(CreateUserDto userDto)
         {
@@ -16,7 +17,7 @@ namespace Todo.Application.Implementations
 
             var UserDomain = mapper.Map<UserDomain>(userDto); // Convert CreateUserDto to UserDomain using AutoMapper
 
-            UserDomain.PasswordHash = BCrypt.Net.BCrypt.HashPassword(UserDomain.PasswordHash);  // Hash the password using BCrypt
+            UserDomain.PasswordHash = _passwordHasher.Hash(userDto.Password);  // Hash the password using BCrypt
 
             await userRepository.AddAsync(UserDomain);
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper.Execution;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace Todo.Infrastructure.Persistence.Entities
         {
         }
 
-
+        //"I want to provide my own database configuration." So im overriding EF Core's default behavior.
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -19,11 +20,11 @@ namespace Todo.Infrastructure.Persistence.Entities
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(TodoAppDbContext).Assembly);
 
-            modelBuilder.Entity<TodoList>()
-                .HasOne(x => x.User)
-                .WithMany()
-                .HasForeignKey(x => x.UserId)
-                .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<TodoList>() //Means: I am configuring the TodoList database entity.
+                .HasOne(x => x.User)                    // Each TodoList has one User
+                .WithMany()                             // Each User can have many TodoLists
+                .HasForeignKey(x => x.UserId)           // The foreign key in TodoList that points to UserId
+                .OnDelete(DeleteBehavior.NoAction);     // When a User is deleted, DO NOTHING automatically
 
             modelBuilder.Entity<TodoItem>()
                 .HasOne(x => x.TodoList)
@@ -56,6 +57,27 @@ namespace Todo.Infrastructure.Persistence.Entities
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
+  /*      The easiest way to remember it
+   *      
+            "I have a TodoItem."
+            "I have a TodoList."
+            "I have a User."
+            "I have a Comment."
+
+            "TodoItem belongs to TodoList."
+
+            "TodoList belongs to User."
+
+            "Comment belongs to TodoItem."
+
+            "Comment belongs to User."
+
+            "TodoItem and Tag are connected through TodoItemTag."
+
+            "If TodoList is deleted, delete its TodoItems."
+
+            "If User is deleted, don't automatically delete TodoLists." */
+
         public DbSet<User> Users { get; set; }
         public DbSet<TodoList> TodoLists { get; set; }
         public DbSet<TodoItem> TodoItems { get; set; }
@@ -64,6 +86,6 @@ namespace Todo.Infrastructure.Persistence.Entities
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ActivityLog> ActivityLogs { get; set; }
 
-       
+
     }
 }

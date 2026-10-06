@@ -14,7 +14,7 @@ namespace Todo.Infrastructure.Repository
         where TEntity : class
     {
 
-        protected readonly TodoAppDbContext _todoAppDbContext;
+        protected readonly TodoAppDbContext _todoAppDbContext; //This class can use it, and classes that inherit from this class can use it.
         protected readonly IMapper _mapper;
 
         public GenericRepository(TodoAppDbContext todoAppDbContext, IMapper mapper)
@@ -48,3 +48,19 @@ namespace Todo.Infrastructure.Repository
         }
     }
 }
+
+/*
+ 
+UserDomain
+     ↓
+ business/domain representation
+
+User
+     ↓
+ persistence/database representation
+
+
+TDomain = UserDomain
+TEntity = User
+
+*/
