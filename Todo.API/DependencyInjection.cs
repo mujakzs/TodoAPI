@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddAutoMapper(typeof(InfraAssemblyMarker).Assembly); //Register AutoMapper only at infra layer
 
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<ITodoRepository, TodoRepository>();
        
         return services;
     }
@@ -35,8 +36,11 @@ public static class DependencyInjection
             typeof(AppAssemblyMarker).Assembly); //Register AutoMapper only at service layer
 
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<ITodoService, TodoService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+
 
         return services;
     }

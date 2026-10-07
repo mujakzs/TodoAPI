@@ -1,15 +1,49 @@
-﻿using AutoMapper.Execution;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
+using Todo.Application.Contracts;
 
 namespace Todo.Infrastructure.Persistence.Entities
 {
     public class TodoAppDbContext : DbContext
     {
-        public TodoAppDbContext(DbContextOptions<TodoAppDbContext> options) : base(options)
+        private readonly ICurrentUserService _currentUser;
+        public TodoAppDbContext(DbContextOptions<TodoAppDbContext> options, ICurrentUserService currentUser) : base(options)
         {
+            _currentUser = currentUser;
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            ApplyAuditConfig();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = new CancellationToken())
+        {
+            ApplyAuditConfig();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
+
+
+        private void ApplyAuditConfig()
+        {
+            var entries = ChangeTracker.Entries<BaseAuditEntity>();
+
+            foreach (var entry in entries)
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.CreatedBy
+                        = _currentUser.GetCurrentUserId() ?? "system"; // If the current user is not available, use "system" as the default value.
+                }
+
+                if (entry.State == EntityState.Modified)
+                {
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedBy
+                        = _currentUser.GetCurrentUserId() ?? "system"; // If the current user is not available, use "system" as the default value.
+                }
+            }
         }
 
         //"I want to provide my own database configuration." So im overriding EF Core's default behavior.

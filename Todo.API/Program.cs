@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Text;
+using Todo.API.Middlewares;
 
 namespace Todo.API
 {
@@ -16,6 +17,8 @@ namespace Todo.API
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
+            builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options => {
@@ -52,6 +55,7 @@ namespace Todo.API
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseMiddleware<UserContextMiddleware>();
 
            
             app.MapControllers();

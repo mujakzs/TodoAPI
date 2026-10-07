@@ -4,8 +4,5 @@ using System.Text;
 
 namespace Todo.Application.DTOs.Request
 {
-    public class TodoRequestDto
-    {
-        
-    }
+    public record CreateTodoDto(string name, string description, List<CreateTodoItemsDto> Items);
 }
