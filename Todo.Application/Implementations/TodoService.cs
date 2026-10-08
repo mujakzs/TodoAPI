@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using Todo.Application.Contracts;
+﻿using Todo.Application.Contracts;
 using Todo.Application.DTOs.Request;
 using Todo.Application.Mappers;
 using Todo.Domain.RepositoryInterface;

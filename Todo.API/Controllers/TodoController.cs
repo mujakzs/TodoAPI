@@ -25,9 +25,9 @@ namespace Todo.API.Controllers
         {
             List<TodoResponseDto> todoList = [];
 
-            todoList.Add(new TodoResponseDto(Name: "Start making baby", IsCompleted: true));
-            todoList.Add(new TodoResponseDto(Name: "Start making apps", IsCompleted: true));
-           
+            todoList.Add(new TodoResponseDto(Name: "Start making baby", Description: "Make a baby", Metadata: null));
+            todoList.Add(new TodoResponseDto(Name: "Start making apps", Description: "Make some apps", Metadata: null));
+
             return Ok(todoList);
         }
 

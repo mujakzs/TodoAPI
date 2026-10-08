@@ -4,7 +4,7 @@ namespace Todo.Domain.DomainEntities;
 
 public class TodoListDomain
 {
-    public Guid Id { get; set; }
+    //public Guid Id { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public ICollection<TodoItemDomain> TodoItems { get; set; }

@@ -32,9 +32,6 @@ public static class DependencyInjection
         this IServiceCollection services)
     {
 
-        services.AddAutoMapper(
-            typeof(AppAssemblyMarker).Assembly); //Register AutoMapper only at service layer
-
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ITokenService, TokenService>();

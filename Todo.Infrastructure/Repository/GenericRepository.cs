@@ -1,9 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Todo.Domain.DomainEntities;
 using Todo.Domain.RepositoryInterface;
 using Todo.Infrastructure.Persistence.Entities;
 
