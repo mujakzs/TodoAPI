@@ -18,6 +18,8 @@ public static class DependencyInjection
 
         services.AddDbContext<TodoAppDbContext>(options => options.UseSqlServer(connectionString));
 
+        services.AddHealthChecks().AddDbContextCheck<TodoAppDbContext>();
+
 
         services.AddAutoMapper(typeof(InfraAssemblyMarker).Assembly); //Register AutoMapper only at infra layer
 
