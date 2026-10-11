@@ -91,27 +91,33 @@ namespace Todo.Infrastructure.Persistence.Entities
                 .OnDelete(DeleteBehavior.Cascade);
         }
 
-  /*      The easiest way to remember it
-   *      
-            "I have a TodoItem."
-            "I have a TodoList."
-            "I have a User."
-            "I have a Comment."
+        /*      The easiest way to remember it
+         *      
+                  "I have a TodoItem."
+                  "I have a TodoList."
+                  "I have a User."
+                  "I have a Comment."
 
-            "TodoItem belongs to TodoList."
+                  "TodoItem belongs to TodoList."
 
-            "TodoList belongs to User."
+                  "TodoList belongs to User."
 
-            "Comment belongs to TodoItem."
+                  "Comment belongs to TodoItem."
 
-            "Comment belongs to User."
+                  "Comment belongs to User."
 
-            "TodoItem and Tag are connected through TodoItemTag."
+                  "TodoItem and Tag are connected through TodoItemTag."
 
-            "If TodoList is deleted, delete its TodoItems."
+                  "If TodoList is deleted, delete its TodoItems."
 
-            "If User is deleted, don't automatically delete TodoLists." */
+                  "If User is deleted, don't automatically delete TodoLists." */
 
+
+
+
+
+        // Define DbSets for each entity in the database
+        // it will reference Repository 
         public DbSet<User> Users { get; set; }
         public DbSet<TodoList> TodoLists { get; set; }
         public DbSet<TodoItem> TodoItems { get; set; }
