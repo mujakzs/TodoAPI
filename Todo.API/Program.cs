@@ -23,6 +23,13 @@ namespace Todo.API
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
+            //builder.Services.AddMemoryCache();
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = "localhost:6379";
+                options.InstanceName = "RedisDemo:";
+            });
+
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddHttpClient(

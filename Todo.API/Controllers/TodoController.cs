@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
+using System.Text.Json;
 using Todo.Application.Contracts;
 using Todo.Application.DTOs.Request;
 using Todo.Application.DTOs.Response;
@@ -15,22 +18,39 @@ namespace Todo.API.Controllers
 
         private readonly ITodoService _todoService;
         private readonly ILogger<TodoController> _logger;
+        private readonly IDistributedCache _distributedCache;
 
-        public TodoController(ITodoService todoService, ILogger<TodoController> logger)
+        public TodoController(ITodoService todoService, ILogger<TodoController> logger, IDistributedCache distributedCache)
         {
             _todoService = todoService;
             _logger = logger;
+            _distributedCache = distributedCache;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<TodoResponseDto> todoList = [];
+            _logger.LogInformation($"Executing GET method inside a TodoController at {DateTime.Now}");
 
-            todoList.Add(new TodoResponseDto(Name: "Start making baby", Description: "Make a baby", Metadata: null));
-            todoList.Add(new TodoResponseDto(Name: "Start making apps", Description: "Make some apps", Metadata: null));
-            
-            _logger.LogInformation("Retrieving todo items");
+            var cache = await _distributedCache.GetStringAsync("todo");
+
+            if (cache != null)
+            {
+                return Ok(JsonSerializer.Deserialize<List<TodoResponseDto>>(cache));
+            }
+
+            var todoList = await _todoService.GetItems();
+
+            var options = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
+            };
+
+            await _distributedCache.SetStringAsync("todo", JsonSerializer.Serialize(todoList), options);
+             
+
+            _logger.LogInformation($"Execution of GET method inside a TodoController completed at {DateTime.Now}");
+
             return Ok(todoList);
         }
 

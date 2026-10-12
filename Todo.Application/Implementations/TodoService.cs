@@ -1,5 +1,6 @@
 ﻿using Todo.Application.Contracts;
 using Todo.Application.DTOs.Request;
+using Todo.Application.DTOs.Response;
 using Todo.Application.Mappers;
 using Todo.Domain.RepositoryInterface;
 
@@ -29,6 +30,14 @@ namespace Todo.Application.Implementations
             int rowsInserted = await _todoRepository.CommitAsync();
 
             return rowsInserted > 0;
+        }
+
+        public async Task<List<TodoResponseDto>> GetItems()
+        {
+            var todoItemsDomain
+               = await _todoRepository.GetTodosAsync(Guid.Parse(_currentUserService.GetCurrentUserId()));
+
+            return(todoItemsDomain.ToResponseDtos());
         }
     }
 }
