@@ -23,10 +23,15 @@ namespace Email.API
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
-
-
-            app.MapControllers();
+            app.MapGet("/email/send", (string recipient, ILogger<Program> logger) =>
+            {
+                if (string.IsNullOrWhiteSpace(recipient))
+                {
+                    return Results.BadRequest(new { status = "error", message = "recipient query parameter is required" });
+                }
+                logger.LogInformation("Sending email to {recipient}", recipient);
+                return Results.Ok(new { status = "success", message = $"Mail has been sent to {recipient}" });
+            }).WithName("Send");
 
             app.Run();
         }

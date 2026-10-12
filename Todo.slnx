@@ -10,6 +10,7 @@
     <Project Path="Todo.Infrastructure/Todo.Infrastructure.csproj" Id="743505ca-f7a1-426c-9fe1-72ed0b328023" />
   </Folder>
   <Folder Name="/src/Presentation/">
+    <Project Path="Email.API/Email.API.csproj" Id="9e728f51-d41d-4a2f-8798-a234396190b8" />
     <Project Path="Todo.API/Todo.API.csproj" />
   </Folder>
 </Solution>

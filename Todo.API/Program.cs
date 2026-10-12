@@ -1,11 +1,14 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Http.Resilience;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Text;
 using System.Text.Json;
 using Todo.API.Middlewares;
+using Todo.Application.Constants;
 
 namespace Todo.API
 {
@@ -22,10 +25,43 @@ namespace Todo.API
 
             builder.Services.AddHttpContextAccessor();
 
+            builder.Services.AddHttpClient(
+                ApplicationConstant.EmailServiceClient, client =>
+                {
+                    client.BaseAddress = new Uri(builder.Configuration.GetSection("EmailService:BaseUrl").Value!);
+                })
+                //.AddStandardResilienceHandler();
+                .AddResilienceHandler("retry", (pipeline, context) =>
+                {
+                    var loggerFactory = context.ServiceProvider?.GetService<ILoggerFactory>();
+                    var logger = loggerFactory?.CreateLogger("EmailServiceResilience");
+
+                    // 3. RETRY (Recover from transient failures)
+                    pipeline.AddRetry(new HttpRetryStrategyOptions
+                    {
+                        MaxRetryAttempts = 3,
+                        Delay = TimeSpan.FromSeconds(2),
+                        UseJitter = true,
+                        BackoffType = DelayBackoffType.Exponential,
+                        OnRetry = args =>
+                        {
+                            // Log as Warning (not Error), because a retry means we are still attempting to recover
+                            logger?.LogWarning(
+                                "Retry attempt {Attempt}. Delay: {Delay}ms. Cause: {Reason}",
+                                args.AttemptNumber + 1,
+                                args.RetryDelay.TotalMilliseconds,
+                                args.Outcome.Exception?.Message ?? args.Outcome.Result?.StatusCode.ToString());
+
+                            return ValueTask.CompletedTask;
+                        }
+                    });
+                });
+
             builder.Services.AddHealthChecks();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => {
+                .AddJwtBearer(options =>
+                {
                     options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
                     {
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("Jwt:SecretKey").Value)),
@@ -83,16 +119,17 @@ namespace Todo.API
                         }));
                 }
             });
-                
+
 
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseMiddleware<UserContextMiddleware>();
 
-           
+
             app.MapControllers();
 
             app.Run();
+
         }
     }
 }

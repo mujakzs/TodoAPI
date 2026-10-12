@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Todo.Application;
 using Todo.Application.Contracts;
+using Todo.Application.Implementation;
 using Todo.Application.Implementations;
 using Todo.Domain.RepositoryInterface;
 using Todo.Infrastructure;
@@ -39,6 +40,7 @@ public static class DependencyInjection
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ITodoService, TodoService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<IEmailService, EmailService>();
 
 
         return services;
