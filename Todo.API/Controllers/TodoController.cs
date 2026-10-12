@@ -14,10 +14,12 @@ namespace Todo.API.Controllers
     {
 
         private readonly ITodoService _todoService;
+        private readonly ILogger<TodoController> _logger;
 
-        public TodoController(ITodoService todoService)
+        public TodoController(ITodoService todoService, ILogger<TodoController> logger)
         {
             _todoService = todoService;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -27,7 +29,8 @@ namespace Todo.API.Controllers
 
             todoList.Add(new TodoResponseDto(Name: "Start making baby", Description: "Make a baby", Metadata: null));
             todoList.Add(new TodoResponseDto(Name: "Start making apps", Description: "Make some apps", Metadata: null));
-
+            
+            _logger.LogInformation("Retrieving todo items");
             return Ok(todoList);
         }
 
@@ -35,6 +38,7 @@ namespace Todo.API.Controllers
         public async Task<IActionResult> Post([FromBody] CreateTodoDto todoDto) // [FromBody] Tell ASP.NET Core to get the value from the HTTP request body
         {
             var created = await _todoService.CreateTodoAsync(todoDto);
+            _logger.LogInformation("Todo item created");
             return Created();
         }
     }
