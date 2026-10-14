@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Todo.Application.Contracts;
 using Todo.Application.DTOs.Request;
+using Todo.API.Extensions;
 
 namespace Todo.API.Controllers
 {
@@ -32,7 +32,10 @@ namespace Todo.API.Controllers
             var clientIp = GetClientIpAddress();
             var response = await _tokenService.RefreshTokenAsync(requestDto, clientIp);
 
-            return Ok(response);
+            if (response.IsSuccess)
+                return Ok(response.Value);
+
+            return response.ToProblemDetails();
         }
 
         [HttpPost("revoke")]
@@ -42,9 +45,9 @@ namespace Todo.API.Controllers
             var result = await _tokenService.RevokeTokenAsync(requestDto.refreshToken, clientIp);
 
             if (result.IsSuccess)
-                return Ok(new { message = "Token revoked successfully." });
+                return Ok("Token revoked");
 
-            return BadRequest(new { message = "Failed to revoke token." });
+            return result.ToProblemDetails();
         }
 
         private string? GetClientIpAddress()
