@@ -26,6 +26,7 @@ public static class DependencyInjection
 
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<ITodoRepository, TodoRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
        
         return services;
     }
@@ -41,6 +42,9 @@ public static class DependencyInjection
         services.AddScoped<ITodoService, TodoService>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<ITokenRevocationService, TokenRevokationService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+        
 
 
         return services;

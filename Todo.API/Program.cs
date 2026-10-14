@@ -7,8 +7,10 @@ using Polly;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Todo.API.Middlewares;
 using Todo.Application.Constants;
+using Todo.Application.Contracts;
 
 namespace Todo.API
 {
@@ -20,7 +22,10 @@ namespace Todo.API
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services
+                .AddControllers()
+                .AddJsonOptions(options => {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());});
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
             //builder.Services.AddMemoryCache();
@@ -78,6 +83,30 @@ namespace Todo.API
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         ClockSkew = TimeSpan.Zero
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnTokenValidated = async context =>
+                        {
+                            var sidClaim = context.Principal?.FindFirst("sid");
+                            if (sidClaim == null || !Guid.TryParse(sidClaim.Value, out var sessionId))
+                            {
+                                context.Fail("Invalid token: missing session reference");
+                                return;
+                            }
+
+                            var revocationService = context.HttpContext.RequestServices
+                                .GetRequiredService<ITokenRevocationService>();
+
+                            bool isRevoked = await revocationService.IsSessionRevokedAsync(sessionId);
+
+                            if (isRevoked)
+                            {
+                                context.Fail("Session has been revoked");
+                            }
+                        }
+
                     };
                 });
 

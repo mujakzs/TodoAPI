@@ -125,6 +125,7 @@ namespace Todo.Infrastructure.Persistence.Entities
         public DbSet<TodoItemTag> TodoItemTags { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ActivityLog> ActivityLogs { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
     }

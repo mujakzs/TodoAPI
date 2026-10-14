@@ -12,7 +12,11 @@ namespace Todo.Domain.RepositoryInterface
 
         Task AddAsync(TDomain domain); //Give me a domain object and I'll add it.
 
+        Task UpdateAsync(TDomain domain);
+
         Task<int> CommitAsync(); //Commit the changes to the database and return the number of affected rows.
+
+        Task DetachAsync(object entityId);
 
     }
 }

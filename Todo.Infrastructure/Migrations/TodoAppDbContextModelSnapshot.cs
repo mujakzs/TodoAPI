@@ -69,6 +69,7 @@ namespace Todo.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Message")
@@ -96,6 +97,72 @@ namespace Todo.Infrastructure.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("Todo.Infrastructure.Persistence.Entities.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("CreatedByIp")
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("ReplacedByTokenId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("RevokedByIp")
+                        .HasMaxLength(45)
+                        .HasColumnType("nvarchar(45)");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExpiresAt")
+                        .HasDatabaseName("IX_RefreshToken_ExpiresAt");
+
+                    b.HasIndex("ReplacedByTokenId");
+
+                    b.HasIndex("Token")
+                        .HasDatabaseName("IX_RefreshToken_TokenHash");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("IX_RefreshToken_UserId");
+
+                    b.HasIndex("UserId", "RevokedAt")
+                        .HasDatabaseName("IX_RefreshToken_UserId_RevokedAt");
+
+                    b.ToTable("RefreshTokens", (string)null);
+                });
+
             modelBuilder.Entity("Todo.Infrastructure.Persistence.Entities.Tag", b =>
                 {
                     b.Property<Guid>("Id")
@@ -110,6 +177,7 @@ namespace Todo.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -140,6 +208,7 @@ namespace Todo.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
@@ -212,6 +281,7 @@ namespace Todo.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
@@ -248,6 +318,7 @@ namespace Todo.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -261,7 +332,6 @@ namespace Todo.Infrastructure.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -290,6 +360,24 @@ namespace Todo.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("TodoItem");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Todo.Infrastructure.Persistence.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("Todo.Infrastructure.Persistence.Entities.RefreshToken", "ReplacedByToken")
+                        .WithMany("ReplacementTokens")
+                        .HasForeignKey("ReplacedByTokenId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("Todo.Infrastructure.Persistence.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReplacedByToken");
 
                     b.Navigation("User");
                 });
@@ -333,6 +421,11 @@ namespace Todo.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Todo.Infrastructure.Persistence.Entities.RefreshToken", b =>
+                {
+                    b.Navigation("ReplacementTokens");
                 });
 
             modelBuilder.Entity("Todo.Infrastructure.Persistence.Entities.Tag", b =>
